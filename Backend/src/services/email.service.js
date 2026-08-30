@@ -7,18 +7,12 @@ const {
     renderEmail,
 } = require('./email.templates');
 
-// ============================================================
-// EMAIL CONFIGURATION
-// ============================================================
-
-console.log('📧 Initializing email service...');
-console.log('📧 EMAIL_USER:', process.env.EMAIL_USER);
-console.log('📧 CLIENT_ID:', process.env.CLIENT_ID ? '✅ Set' : '❌ Missing');
-console.log('📧 CLIENT_SECRET:', process.env.CLIENT_SECRET ? '✅ Set' : '❌ Missing');
-console.log('📧 REFRESH_TOKEN:', process.env.REFRESH_TOKEN ? '✅ Set' : '❌ Missing');
-
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+
+    family: 4,
 
     auth: {
         type: 'OAuth2',
@@ -28,52 +22,26 @@ const transporter = nodemailer.createTransport({
         refreshToken: process.env.REFRESH_TOKEN,
     },
 
-    // Debugging
     logger: true,
     debug: true,
 
-    // Prevent the request from hanging indefinitely
     connectionTimeout: 15000,
     greetingTimeout: 15000,
     socketTimeout: 30000,
 });
 
-// ============================================================
-// VERIFY EMAIL CONNECTION
-// ============================================================
-
-console.log('📧 Checking Gmail SMTP connection...');
-
+// Verify the connection configuration
 transporter.verify((error, success) => {
     if (error) {
-        console.error('❌ Gmail SMTP verification FAILED');
-        console.error('❌ Error:', error);
-        console.error('❌ Message:', error.message);
-        console.error('❌ Code:', error.code);
-        console.error('❌ Command:', error.command);
-        console.error('❌ Response:', error.response);
+        console.error('Error connecting to email server:', error);
     } else {
-        console.log('✅ Gmail SMTP connection verified');
-        console.log('📧 Email server is ready to send messages');
+        console.log('Email server is ready to send messages');
     }
 });
 
-// ============================================================
-// CORE SEND FUNCTION
-// ============================================================
-
+// Core send function
 const sendEmail = async (to, subject, text, html) => {
-    console.log('');
-    console.log('========================================');
-    console.log('📤 EMAIL SEND STARTED');
-    console.log('========================================');
-    console.log('📨 To:', to);
-    console.log('📝 Subject:', subject);
-    console.log('📧 From:', process.env.EMAIL_USER);
-
     try {
-        console.log('🔄 Calling transporter.sendMail()...');
-
         const info = await transporter.sendMail({
             from: `"Ledgerly" <${process.env.EMAIL_USER}>`,
             to,
@@ -82,44 +50,16 @@ const sendEmail = async (to, subject, text, html) => {
             html,
         });
 
-        console.log('');
-        console.log('========================================');
-        console.log('✅ EMAIL SENT SUCCESSFULLY');
-        console.log('========================================');
-
-        console.log('📨 Message ID:', info.messageId);
-        console.log('📬 Accepted:', info.accepted);
-        console.log('📭 Rejected:', info.rejected);
-        console.log('📡 Response:', info.response);
-
-        return info;
-
+        console.log('Message sent: %s', info.messageId);
     } catch (error) {
-        console.error('');
-        console.error('========================================');
-        console.error('❌ EMAIL SEND FAILED');
-        console.error('========================================');
-
-        console.error('❌ Error message:', error.message);
-        console.error('❌ Error code:', error.code);
-        console.error('❌ Error command:', error.command);
-        console.error('❌ Error response:', error.response);
-        console.error('❌ Error responseCode:', error.responseCode);
-        console.error('❌ Full error:', error);
-
-        return null;
+        console.error('Error sending email:', error);
     }
 };
 
-// ============================================================
-// WELCOME / REGISTRATION EMAIL
-// ============================================================
-
+/**
+ * Welcome / registration email
+ */
 async function sendRegistrationEmail(userEmail, name) {
-    console.log('👤 Registration email requested');
-    console.log('👤 User:', name);
-    console.log('📨 Email:', userEmail);
-
     const subject = 'Welcome to Ledgerly!';
 
     const text = `Hello ${name},\n\nThank you for registering at Ledgerly. We're excited to have you on board!\n\nBest regards,\nThe Ledgerly Team`;
@@ -141,26 +81,18 @@ async function sendRegistrationEmail(userEmail, name) {
             ${detailRow("Email", userEmail)}
             ${detailRow("Joined On", formatDate(), true)}
         `,
+        // ctaLabel: "Go to Dashboard",
+        // ctaUrl: "#",
+        // accentColor: "#0F172A",
     });
 
-    console.log('📧 Sending registration email...');
-
     await sendEmail(userEmail, subject, text, html);
-
-    console.log('✅ Registration email process completed');
 }
 
-// ============================================================
-// SUCCESSFUL TRANSACTION EMAIL
-// ============================================================
-
+/**
+ * Successful transaction email
+ */
 async function sendTransactionEmail(userEmail, name, amount, toAccount) {
-    console.log('💸 Transaction success email requested');
-    console.log('👤 User:', name);
-    console.log('📨 Email:', userEmail);
-    console.log('💰 Amount:', amount);
-    console.log('🏦 To Account:', toAccount);
-
     const subject = 'Transaction Successful!';
 
     const text = `Hello ${name},\n\nYour transaction of $${amount} to account ${toAccount} was successful.\n\nBest regards,\nThe Ledgerly Team`;
@@ -180,26 +112,18 @@ async function sendTransactionEmail(userEmail, name, amount, toAccount) {
             ${detailRow("Date & Time", formatDate())}
             ${detailRow("Status", statusBadge("Completed", "success"), true)}
         `,
+        // ctaLabel: "View Transaction History",
+        // ctaUrl: "#",
+        // accentColor: "#16A34A",
     });
 
-    console.log('📧 Sending transaction success email...');
-
     await sendEmail(userEmail, subject, text, html);
-
-    console.log('✅ Transaction success email process completed');
 }
 
-// ============================================================
-// FAILED TRANSACTION EMAIL
-// ============================================================
-
+/**
+ * Failed transaction email
+ */
 async function sendTransactionFailureEmail(userEmail, name, amount, toAccount) {
-    console.log('❌ Transaction failure email requested');
-    console.log('👤 User:', name);
-    console.log('📨 Email:', userEmail);
-    console.log('💰 Amount:', amount);
-    console.log('🏦 To Account:', toAccount);
-
     const subject = 'Transaction Failed';
 
     const text = `Hello ${name},\n\nWe regret to inform you that your transaction of $${amount} to account ${toAccount} has failed. Please try again later.\n\nBest regards,\nThe Ledgerly Team`;
@@ -222,21 +146,16 @@ async function sendTransactionFailureEmail(userEmail, name, amount, toAccount) {
             ${detailRow("Date & Time", formatDate())}
             ${detailRow("Status", statusBadge("Failed", "failure"), true)}
         `,
+        // ctaLabel: "Retry Transfer",
+        // ctaUrl: "#",
+        // accentColor: "#DC2626",
     });
 
-    console.log('📧 Sending transaction failure email...');
-
     await sendEmail(userEmail, subject, text, html);
-
-    console.log('✅ Transaction failure email process completed');
 }
-
-// ============================================================
-// EXPORTS
-// ============================================================
 
 module.exports = {
     sendRegistrationEmail,
     sendTransactionEmail,
-    sendTransactionFailureEmail,
+    sendTransactionFailureEmail
 };
