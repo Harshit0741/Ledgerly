@@ -33,19 +33,35 @@ app.use("/api", (req, res) => {
 })
 
 app.use((err, req, res, next) => {
-    console.error(err)
+    console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    console.error("❌ EXPRESS ERROR")
+    console.error("❌ Method:", req.method)
+    console.error("❌ URL:", req.originalUrl)
+    console.error("❌ Error name:", err.name)
+    console.error("❌ Error message:", err.message)
+    console.error("❌ Error stack:", err.stack)
+    console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     if (err.name === "ValidationError") {
-        return res.status(400).json({ message: err.message })
+        return res.status(400).json({
+            message: err.message,
+        })
     }
 
     if (err.name === "CastError") {
-        return res.status(400).json({ message: "Invalid identifier" })
+        return res.status(400).json({
+            message: "Invalid identifier",
+        })
     }
 
     const status = err.status || err.statusCode || 500
+
     res.status(status).json({
-        message: status === 500 ? "Something went wrong" : err.message
+        message: status === 500 ? "Something went wrong" : err.message,
+        ...(process.env.NODE_ENV !== "production" && {
+            error: err.message,
+            stack: err.stack,
+        }),
     })
 })
 

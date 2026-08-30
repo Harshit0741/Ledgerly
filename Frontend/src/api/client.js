@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const API_BASE_URL = process.env.API;
+export const API_BASE_URL = "http://localhost:5000";
 
 const TOKEN_KEY = "ledger.token";
 
