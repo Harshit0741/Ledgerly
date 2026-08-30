@@ -19,6 +19,7 @@ console.log('📧 REFRESH_TOKEN:', process.env.REFRESH_TOKEN ? '✅ Set' : '❌ 
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+
     auth: {
         type: 'OAuth2',
         user: process.env.EMAIL_USER,
@@ -26,18 +27,34 @@ const transporter = nodemailer.createTransport({
         clientSecret: process.env.CLIENT_SECRET,
         refreshToken: process.env.REFRESH_TOKEN,
     },
+
+    // Debugging
+    logger: true,
+    debug: true,
+
+    // Prevent the request from hanging indefinitely
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
 });
 
 // ============================================================
 // VERIFY EMAIL CONNECTION
 // ============================================================
 
+console.log('📧 Checking Gmail SMTP connection...');
+
 transporter.verify((error, success) => {
     if (error) {
-        console.error('❌ Email server verification failed');
-        console.error('❌ Email error:', error);
+        console.error('❌ Gmail SMTP verification FAILED');
+        console.error('❌ Error:', error);
+        console.error('❌ Message:', error.message);
+        console.error('❌ Code:', error.code);
+        console.error('❌ Command:', error.command);
+        console.error('❌ Response:', error.response);
     } else {
-        console.log('✅ Email server is ready to send messages');
+        console.log('✅ Gmail SMTP connection verified');
+        console.log('📧 Email server is ready to send messages');
     }
 });
 
@@ -46,11 +63,17 @@ transporter.verify((error, success) => {
 // ============================================================
 
 const sendEmail = async (to, subject, text, html) => {
-    console.log('📤 Preparing to send email...');
+    console.log('');
+    console.log('========================================');
+    console.log('📤 EMAIL SEND STARTED');
+    console.log('========================================');
     console.log('📨 To:', to);
     console.log('📝 Subject:', subject);
+    console.log('📧 From:', process.env.EMAIL_USER);
 
     try {
+        console.log('🔄 Calling transporter.sendMail()...');
+
         const info = await transporter.sendMail({
             from: `"Ledgerly" <${process.env.EMAIL_USER}>`,
             to,
@@ -59,18 +82,32 @@ const sendEmail = async (to, subject, text, html) => {
             html,
         });
 
-        console.log('✅ Email sent successfully!');
+        console.log('');
+        console.log('========================================');
+        console.log('✅ EMAIL SENT SUCCESSFULLY');
+        console.log('========================================');
+
         console.log('📨 Message ID:', info.messageId);
         console.log('📬 Accepted:', info.accepted);
         console.log('📭 Rejected:', info.rejected);
+        console.log('📡 Response:', info.response);
 
         return info;
+
     } catch (error) {
-        console.error('❌ Error sending email');
+        console.error('');
+        console.error('========================================');
+        console.error('❌ EMAIL SEND FAILED');
+        console.error('========================================');
+
         console.error('❌ Error message:', error.message);
         console.error('❌ Error code:', error.code);
+        console.error('❌ Error command:', error.command);
         console.error('❌ Error response:', error.response);
+        console.error('❌ Error responseCode:', error.responseCode);
         console.error('❌ Full error:', error);
+
+        return null;
     }
 };
 
