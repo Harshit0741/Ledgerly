@@ -8,23 +8,11 @@ const {
     renderEmail,
 } = require("./email.templates");
 
-console.log("📧 Initializing Resend email service...");
-
-
-console.log(
-    "📧 RESEND_API_KEY:",
-    process.env.RESEND_API_KEY ? "✅ Set" : "❌ Missing"
-);
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Core send function
 const sendEmail = async (to, subject, text, html) => {
     try {
-        console.log("📤 Preparing to send email...");
-        console.log("📨 To:", to);
-        console.log("📝 Subject:", subject);
-
         const { data, error } = await resend.emails.send({
             from: "Ledgerly <onboarding@resend.dev>",
             to: [to],
@@ -34,16 +22,13 @@ const sendEmail = async (to, subject, text, html) => {
         });
 
         if (error) {
-            console.error("❌ Resend email error:");
+            console.error("Resend email error:");
             console.error(error);
 
             return;
         }
-
-        console.log("✅ Email sent successfully!");
-        console.log("📧 Resend Email ID:", data?.id);
     } catch (error) {
-        console.error("❌ Error sending email:");
+        console.error("Error sending email:");
         console.error(error);
     }
 };

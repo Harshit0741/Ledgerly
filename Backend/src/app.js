@@ -5,7 +5,6 @@ const cors = require("cors")
 
 const app = express()
 
-console.log("🌐 FRONTEND_URL:", process.env.FRONTEND_URL);
 
 app.use(
   cors({
@@ -41,30 +40,6 @@ app.use("/api/transactions", transactionRoutes)
 app.use("/api", (req, res) => {
     res.status(404).json({ message: "Not found" })
 })
-
-app.get("/test-email-connection", async (req, res) => {
-    const dns = require("dns");
-
-    console.log("🧪 Testing Gmail SMTP connection...");
-
-    dns.lookup("smtp.gmail.com", { all: true }, (err, addresses) => {
-        if (err) {
-            console.error("❌ DNS ERROR:", err);
-            return res.status(500).json({
-                success: false,
-                error: err.message,
-            });
-        }
-
-        console.log("📡 Gmail IPs:", addresses);
-
-        res.json({
-            success: true,
-            message: "DNS resolution works",
-            addresses,
-        });
-    });
-});
 
 app.use((err, req, res, next) => {
     console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
