@@ -2,6 +2,8 @@ import axios from "axios";
 
 export const API_BASE_URL = import.meta.env.VITE_API;
 
+console.log("🔥 PRODUCTION API:", import.meta.env.VITE_API);
+
 const TOKEN_KEY = "ledger.token";
 
 let memoryToken = null;
