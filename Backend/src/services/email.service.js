@@ -1,3 +1,8 @@
+const dns = require("dns");
+
+dns.setDefaultResultOrder("ipv4first");
+
+console.log("🌐 DNS order:", dns.getDefaultResultOrder());
 const nodemailer = require('nodemailer');
 const {
     formatCurrency,
@@ -8,14 +13,13 @@ const {
 } = require('./email.templates');
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     port: 587,
-    secure: true,
-
-    family: 4,
+    secure: false,
+    requireTLS: true,
 
     auth: {
-        type: 'OAuth2',
+        type: "OAuth2",
         user: process.env.EMAIL_USER,
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
@@ -25,8 +29,8 @@ const transporter = nodemailer.createTransport({
     logger: true,
     debug: true,
 
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
+    connectionTimeout: 30000,
+    greetingTimeout: 30000,
     socketTimeout: 30000,
 });
 
