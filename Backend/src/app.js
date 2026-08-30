@@ -10,13 +10,9 @@ console.log("🌐 FRONTEND_URL:", process.env.FRONTEND_URL);
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log("🔐 CORS request from:", origin);
-      console.log("✅ Allowed frontend:", process.env.FRONTEND_URL);
-
       if (!origin || origin === process.env.FRONTEND_URL) {
         callback(null, true);
       } else {
-        console.log("❌ CORS BLOCKED:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
