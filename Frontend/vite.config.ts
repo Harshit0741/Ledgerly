@@ -40,7 +40,7 @@ export default defineConfig(async ({ command }) => ({
       server: { entry: "server" },
     }),
     // Bundle the server for deployment only during `vite build`.
-    ...(command === "build" ? [(await import("nitro/vite")).nitro({ preset: "cloudflare-module" })] : []),
+    ...(command === "build" ? [(await import("nitro/vite")).nitro({ preset: "vercel" })] : []),
     viteReact(),
   ],
 }));

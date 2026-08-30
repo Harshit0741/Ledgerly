@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import TransferPage from "@/pages/TransferPage";
-import { RequireAuth } from "@/routes/AppRoutes";
+import { RequireAuth } from "@/routes/-AppRoutes";
 
 export const Route = createFileRoute("/transfer")({
   ssr: false,
