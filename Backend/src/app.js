@@ -5,10 +5,20 @@ const cors = require("cors")
 
 const app = express()
 
-app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:8080",
+console.log("🌐 FRONTEND_URL:", process.env.FRONTEND_URL);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || origin === process.env.FRONTEND_URL) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-}))
+  }),
+);
 
 app.use(express.json())
 app.use(cookieParser())
@@ -31,6 +41,30 @@ app.use("/api/transactions", transactionRoutes)
 app.use("/api", (req, res) => {
     res.status(404).json({ message: "Not found" })
 })
+
+app.get("/test-email-connection", async (req, res) => {
+    const dns = require("dns");
+
+    console.log("🧪 Testing Gmail SMTP connection...");
+
+    dns.lookup("smtp.gmail.com", { all: true }, (err, addresses) => {
+        if (err) {
+            console.error("❌ DNS ERROR:", err);
+            return res.status(500).json({
+                success: false,
+                error: err.message,
+            });
+        }
+
+        console.log("📡 Gmail IPs:", addresses);
+
+        res.json({
+            success: true,
+            message: "DNS resolution works",
+            addresses,
+        });
+    });
+});
 
 app.use((err, req, res, next) => {
     console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -64,5 +98,6 @@ app.use((err, req, res, next) => {
         }),
     })
 })
+
 
 module.exports = app

@@ -10,6 +10,7 @@ const {
 
 console.log("📧 Initializing Resend email service...");
 
+
 console.log(
     "📧 RESEND_API_KEY:",
     process.env.RESEND_API_KEY ? "✅ Set" : "❌ Missing"
@@ -177,3 +178,4 @@ module.exports = {
     sendTransactionEmail,
     sendTransactionFailureEmail,
 };
+
