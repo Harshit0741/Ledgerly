@@ -13,13 +13,11 @@ export function DashboardPage() {
   return (
     <AppShell title="Accounts">
       <div className="mx-auto max-w-6xl space-y-6">
-        <Alert variant={'destructive'}>
+        <Alert>
           <Info className="h-4 w-4" />
           <AlertTitle>Demo account</AlertTitle>
           <AlertDescription>
-            Every new account is credited ₹100 automatically from an internal treasury account —
-            purely so you have a balance to test transfers with. There's no real deposit endpoint
-            yet, this is a stand-in for one until real funding (card/bank) is wired up.
+             Every account is credited ₹100 automatically from an internal treasury account, so you have a balance to test transfers with. There's no public deposit endpoint by design — only a trusted system account is allowed to inject funds into the ledger, the same way real banking systems separate "moving money" from "creating money."
           </AlertDescription>
         </Alert>
 
