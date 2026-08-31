@@ -134,7 +134,7 @@ login, or an `Authorization: Bearer <token>` header.
 ### 📮 Postman collection
 
 A ready-to-import collection covering every endpoint above lives at
-[`Backend/docs/Ledgerly.postman_collection.json`](./Backend/docs/Ledgerly.postman_collection.json).
+[`Backend/docs/Ledgerly.postman_collection.json`](https://documenter.getpostman.com/view/43825972/2sBYAuTBPZ).
 
 To use it:
 1. Postman → **Import** → select the file.
