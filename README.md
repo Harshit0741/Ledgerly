@@ -129,7 +129,7 @@ login, or an `Authorization: Bearer <token>` header.
 | GET | `/accounts/balance/:accountId` | ✓ | Get a specific account's live balance |
 | POST | `/transactions` | ✓ | Transfer between two of your own accounts |
 | GET | `/transactions` | ✓ | List transactions (sent or received) across your accounts |
-| POST | `/transactions/system/initial-funds` | ✓ (system user only) | Credit any account from a system account |
+| POST | `/transactions/system/initial-funds` | ✓ (system user only, see [Becoming a system user](#-becoming-a-system-user)) | Credit any account from a system account |
 
 ### 📮 Postman collection
 
@@ -141,6 +141,41 @@ To use it:
 2. Set the collection's `baseUrl` variable if your backend isn't on `http://localhost:5500/api`.
 3. Run **Auth → Login**, then copy the returned `token` into the collection's `token` variable —
    the rest of the requests are pre-wired to send it as a bearer token.
+
+## 🧑‍💼 Becoming a system user
+
+The `POST /transactions/system/initial-funds` endpoint (see above) is intentionally locked down —
+only a user with `systemUser: true` can call it. This mirrors how real ledgers separate "moving
+money between accounts" from "creating money in the first place": regular users can only do the
+former.
+
+There's no public API route to promote a user to system-user status, and the field is `immutable`
+at the Mongoose level, so it can only be set with a direct database write:
+
+1. Register a normal user via `POST /auth/register` (e.g. `treasury@yourapp.com`).
+2. Log in as that user and create an account for it via `POST /accounts` — the initial-funds
+   endpoint debits from this account, so it needs one before it'll work.
+3. Open the `users` collection in **MongoDB Compass** (or `mongosh`), find that user's document,
+   and manually change its `systemUser` field from `false` to `true`.
+4. Log in again to get a fresh token, then call `POST /transactions/system/initial-funds` with
+   that token to credit any account.
+
+This is a manual, one-time setup step per environment — most testing won't need it at all, since
+new accounts are already funded automatically via `SIGNUP_BONUS_AMOUNT`.
+
+## 🎁 Why new accounts start with ₹100
+
+Every new account is credited `SIGNUP_BONUS_AMOUNT` (₹100 by default) automatically from an
+internal treasury account, so there's a balance to test transfers with immediately after signup.
+
+There's no self-serve deposit endpoint (card/bank funding) by design — only a trusted system
+account can inject funds into the ledger. This mirrors real banking systems, where regular users
+can move money *between* accounts but can't create money themselves. Exposing a public "add
+funds" endpoint would break that separation.
+
+The same note is shown on the Accounts page in the UI. If you're running this locally and want to
+top up balances beyond the signup bonus, see [Becoming a system user](#-becoming-a-system-user)
+below.
 
 ## 📁 Project structure
 
