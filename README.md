@@ -35,7 +35,7 @@ Ledgerly/
 
 **Frontend** (`Frontend/`)
 - [TanStack Start](https://tanstack.com/start) — file-based routing, SSR
-- ⚛️ React 19 + TypeScript
+- ⚛️ React 19 + JavaScript
 - 🎨 Tailwind CSS + shadcn/ui
 - 🔄 TanStack Query for data fetching/caching
 - Axios
