@@ -1,5 +1,4 @@
 import { Info } from "lucide-react";
-
 import { getErrorMessage } from "@/api/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AccountList from "@/components/accounts/AccountList";
@@ -9,7 +8,6 @@ import { useAccounts } from "@/hooks/useAccounts";
 
 export function DashboardPage() {
   const { data: accounts, isPending, error } = useAccounts();
-
   return (
     <AppShell title="Accounts">
       <div className="mx-auto max-w-6xl space-y-6">
@@ -17,7 +15,7 @@ export function DashboardPage() {
           <Info className="h-4 w-4" />
           <AlertTitle>Demo account</AlertTitle>
           <AlertDescription>
-             Every account is credited ₹100 automatically from an internal treasury account, so you have a balance to test transfers with. There's no public deposit endpoint by design — only a trusted system account is allowed to inject funds into the ledger, the same way real banking systems separate "moving money" from "creating money."
+            Every account is credited ₹100 automatically from an internal treasury account, so you have a balance to test transfers with. There's no public deposit endpoint by design — only a trusted system account is allowed to inject funds into the ledger, the same way real banking systems separate "moving money" from "creating money."
           </AlertDescription>
         </Alert>
         <Alert>
@@ -46,7 +44,6 @@ export function DashboardPage() {
             .
           </AlertDescription>
         </Alert>
-
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight">Your accounts</h2>
